@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <header>
+        <img src="/img/logo.svg" alt="logo" width="64" height="64">
+        <span class="select-profile">
+            <p><b>Ануров Кирилл</b></p>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#1f1f1f">
+                <path d="M12,15.4l-6-6L7.4,8L12,12.6L16.6,8L18,9.4l-6,6Z" />
+            </svg>
+        </span>
+    </header>
+    <div class="user-card">
+        <svg class="fifa-shield" viewBox="0 0 320 450" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="card-bg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1e3c72" />
+                    <stop offset="55%" stop-color="#142854" />
+                    <stop offset="100%" stop-color="#0b1733" />
+                </linearGradient>
+                <linearGradient id="gold-border" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#f3d43c" />
+                    <stop offset="50%" stop-color="#fff099" />
+                    <stop offset="100%" stop-color="#c9a218" />
+                </linearGradient>
+                <clipPath id="fifa-clip">
+                    <path
+                        d="M 32,68 Q 95,48 142,26 L 160,12 L 178,26 Q 225,48 288,68 L 288,365 Q 288,390 250,400 Q 185,412 160,436 Q 135,412 70,400 Q 32,390 32,365 Z" />
+                </clipPath>
+            </defs>
+
+            <path
+                d="M 32,68 Q 95,48 142,26 L 160,12 L 178,26 Q 225,48 288,68 L 288,365 Q 288,390 250,400 Q 185,412 160,436 Q 135,412 70,400 Q 32,390 32,365 Z"
+                fill="url(#card-bg)" stroke="url(#gold-border)" stroke-width="5" />
+
+            <path
+                d="M 40,74 Q 98,55 144,34 L 160,21 L 176,34 Q 222,55 280,74 L 280,360 Q 280,382 246,391 Q 185,402 160,425 Q 135,402 74,391 Q 40,382 40,360 Z"
+                fill="none" stroke="rgba(243, 212, 60, 0.25)" stroke-width="1.5" />
+        </svg>
+
+        <div class="card-content">
+            <div class="card-top">
+                <div class="left-info">
+                    <div class="card-rating">
+                        <%= user.rating ?? 63 %>
+                    </div>
+                    <div class="card-pos">
+                        <%= user.position || 'НАП' %>
+                    </div>
+                    <div class="info-line"></div>
+                    <div class="flag-ru" title="Россия">
+                        <span class="flag-w"></span>
+                        <span class="flag-b"></span>
+                        <span class="flag-r"></span>
+                    </div>
+                </div>
+
+                <div class="photo-box">
+                    <img class="player-photo"
+                        src="<%= user.avatar || 'https://placehold.co/220x240/7d94a8/ffffff?text=PHOTO' %>"
+                        alt="<%= user.name || 'Фото игрока' %>">
+                </div>
+            </div>
+
+            <div class="card-name">
+                <%= user.name || 'АНУРОВ КИРИЛЛ' %>
+            </div>
+            <div class="name-line"></div>
+
+            <div class="card-stats">
+                <div class="stats-col">
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.speed ?? '—' %>
+                            </span>
+                            <span class="stat-label">СКОР</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.speedPercent ?? (user.speed ? user.speed * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.shot ?? '—' %>
+                            </span>
+                            <span class="stat-label">УДАР</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.shotPercent ?? (user.shot ? user.shot * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.pass ?? '—' %>
+                            </span>
+                            <span class="stat-label">ПАСЫ</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.passPercent ?? (user.pass ? user.pass * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-divider"></div>
+
+                <div class="stats-col">
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.coord ?? '—' %>
+                            </span>
+                            <span class="stat-label">КООРД</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.coordPercent ?? (user.coord ? user.coord * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.drib ?? '—' %>
+                            </span>
+                            <span class="stat-label">ДРИБ</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.dribPercent ?? (user.drib ? user.drib * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-text">
+                            <span class="stat-val">
+                                <%= user.power ?? '—' %>
+                            </span>
+                            <span class="stat-label">СИЛА</span>
+                        </div>
+                        <div class="bar-track"
+                            style="--val: <%= user.powerPercent ?? (user.power ? user.power * 10 : 0) %>%;">
+                            <div class="bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="stats">
+        <h2>Мои результаты</h2>
+        <div class="result">
+            <span style="display: flex;">
+                <span class="stat-icon"><img width="36" height="36" src="/img/run-30.png" alt="бег"></span>
+                <p><b>Бег 20м</b></p>
+            </span>
+            <span style="display: flex; align-items: baseline; gap: 4px;">
+                <h3 style="font-size: 20px; margin: 0;">3.78</h3>
+                <p style="margin: 0;">с</p>
+            </span>
+        </div>
+        <div class="result">
+            <span style="display: flex;">
+                <span class="stat-icon"><img width="36" height="36" src="/img/long-jump.png" alt="бег"></span>
+                <p><b>Взрывная сила ног</b></p>
+            </span>
+            <span style="display: flex; align-items: baseline; gap: 4px;">
+                <h3 style="font-size: 20px; margin: 0;">172</h3>
+                <p style="margin: 0;">м</p>
+            </span>
+        </div>
+        <div class="result">
+            <span style="display: flex;">
+                <span class="stat-icon"><img width="36" height="36" src="/img/pass.svg" alt="бег"></span>
+                <p><b>Пасы</b></p>
+            </span>
+            <span style="display: flex; align-items: baseline; gap: 4px;">
+                <h3 style="font-size: 20px; margin: 0;">10</h3>
+                <p style="margin: 0;">к-в</p>
+            </span>
+        </div>
+        <div class="result">
+            <span style="display: flex;">
+                <span class="stat-icon"><img width="36" height="36" src="/img/cordination.svg" alt="бег"></span>
+                <p><b>Координация</b></p>
+            </span>
+            <span style="display: flex; align-items: baseline; gap: 4px;">
+                <h3 style="font-size: 20px; margin: 0;">35</h3>
+                <p style="margin: 0;">к-в</p>
+            </span>
+        </div>
+    </div>
+</body>
+
+</html>

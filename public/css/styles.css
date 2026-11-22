@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&family=Rubik:ital,wght@0,300..900;1,300..900');
+
+body{
+    font-family: 'Nunito';
+    margin: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 10px;
+    border-bottom: 2px solid gray;
+    align-items: center;
+}
+.select-profile {
+    background-color: #F3F2F9;
+    border-radius: 30px;
+    border: none;
+    display: flex;
+    align-items: center;
+    padding: 3px 15px;
+    width: 250px;
+    height: 40px;
+    text-decoration: none;
+    justify-content: space-between;
+
+}
+
+.stats {
+    background-color: #363636;
+    border: none;
+    border-radius: 15px;
+    padding: 7px;
+    min-height: 300px;
+    width: 100% auto;
+    margin: 5px;
+    color: white;
+    font-family: 'Rubik';
+}
+.result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid gray;
+
+}
+.stat-icon {
+    background-color: #EFF1F3;
+    border: none;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2px;
+}
+
+/* Карточка игрока */
+.user-card {
+    position: relative;
+    width: 320px;
+    height: 450px;
+    user-select: none;
+}
+
+.user-card * {
+    font-family: 'Oswald', 'Arial', sans-serif;
+    box-sizing: border-box;
+}
+
+.fifa-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+    pointer-events: none;
+}
+
+.card-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    clip-path: url(#fifa-clip);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-top {
+    position: relative;
+    width: 240px;
+    height: 185px;
+    margin-top: 52px;
+}
+
+.left-info {
+    position: absolute;
+    top: 12px;
+    left: 6px;
+    width: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.card-rating {
+    color: #f3d43c;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.card-pos {
+    color: #f3d43c;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.info-line {
+    width: 34px;
+    height: 1px;
+    background: rgba(243, 212, 60, 0.45);
+    margin: 7px 0;
+}
+
+.flag-ru {
+    width: 34px;
+    height: 21px;
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.flag-ru span {
+    flex: 1;
+    width: 100%;
+}
+
+.flag-w { background: #ffffff; }
+.flag-b { background: #0039a6; }
+.flag-r { background: #d52b1e; }
+
+.photo-box {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 185px;
+    height: 185px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+}
+
+.player-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.card-name {
+    margin-top: 2px;
+    color: #f3d43c;
+    font-size: 23px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.name-line {
+    width: 210px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(243, 212, 60, 0.7), transparent);
+    margin: 4px 0 10px;
+}
+
+.card-stats {
+    width: 224px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.stats-col {
+    width: 98px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stats-divider {
+    width: 1px;
+    background: linear-gradient(180deg, rgba(243, 212, 60, 0.6), transparent);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-text {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.stat-val {
+    color: #ffffff;
+    font-weight: 700;
+    min-width: 20px;
+}
+
+.stat-label {
+    color: #d6e0f5;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.bar-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    width: var(--val, 0%);
+    height: 100%;
+    background: #a31d32;
+    transition: width 0.3s ease;
+}

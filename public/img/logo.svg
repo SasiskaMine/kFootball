@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1{fill:url(#radial-gradient-1)}
+      .cls-2{font-family:FreeSans, sans-serif;font-size:18px;fill:#1a1a1a}
+      .cls-3{font-family:&apos;BIZ UDPGothic&apos;, sans-serif;font-size:60px;fill:url(#linear-gradient-1);text-anchor:middle}
+      .cls-4{font-family:&apos;Adwaita Mono&apos;, monospace;font-size:60px;fill:#1a1a1a}
+    </style>
+    <radialGradient id="radial-gradient-1" cx="984.381" cy="987.456" r="1408.767" fx="1029.704" fy="1042.711" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9dce80"/>
+      <stop offset="0.9842" stop-color="#0c3900"/>
+      <stop offset="1" stop-color="#222023"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient-1" x1="26.943" y1="3.078" x2="-54.172" y2="-69.488" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000000"/>
+      <stop offset="1" stop-color="#333333"/>
+    </linearGradient>
+  </defs>
+  <title>Artboard 1</title>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="Layer_2" data-name="Layer 2" data-vc-layer="sublayer">
+      <rect x="0" y="0" width="1000" height="1000" class="cls-1"/>
+      <text transform="matrix(1.061 0 0 1.588 1 25.732)" x="0" y="0" xml:space="preserve" class="cls-2"><tspan x="0" y="0">КИРИЛЛ АНУРОВ</tspan></text>
+    </g>
+    <text transform="matrix(7.773 0 0 7.773 500 632.179)" x="0" y="0" xml:space="preserve" class="cls-3"><tspan x="0" y="0">KP</tspan></text>
+    <text transform="matrix(1 0 0 1 302 715.87)" x="0" y="0" xml:space="preserve" class="cls-4"><tspan x="0" y="0">KiwiProject</tspan></text>
+  </g>
+</svg>
