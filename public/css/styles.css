@@ -3,6 +3,7 @@
 body{
     font-family: 'Nunito';
     margin: 0;
+    padding: 0;
 }
 
 header {
@@ -56,6 +57,38 @@ header {
     align-items: center;
     margin: 2px;
 }
+.workout {
+    background-color: #253A6F;
+    margin: 10px;
+    padding: 15px; 
+    color: white;
+    border-radius: 15px;
+    
+}
+
+
+.workout p {
+    margin: 0;
+    padding: 0;
+}
+
+.workout-header {
+    margin-bottom: 10px; 
+    display: flex;
+    border-bottom: 2px solid #3554a2; 
+}
+
+.workout-content {
+    display: flex;
+    justify-content: center;
+    font-family: "Oswald", sans-serif;
+    font-size: 30px;
+    line-height: 1.1; 
+    
+}
+
+
+
 
 /* Карточка игрока */
 .user-card {
@@ -63,6 +96,7 @@ header {
     width: 320px;
     height: 450px;
     user-select: none;
+    margin: 0 auto;
 }
 
 .user-card * {
@@ -244,3 +278,37 @@ header {
     background: #a31d32;
     transition: width 0.3s ease;
 }
+.settings {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background-color: rgba(46, 46, 46, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fefefe;
+    border-radius: 20px 20px 0 0;
+    z-index: 100;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    touch-action: none;
+    box-sizing: border-box;
+    padding: 20px;
+    text-align: center;
+}
+
+.settings::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    margin: -8px auto 15px auto;
+}
+
+.settings.open {
+    transform: translateY(0);
+}
+

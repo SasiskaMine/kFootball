@@ -18,12 +18,17 @@ app.get('/', async (c) => {
     pass: null,
     coord: 10,
     drib: null,
-    power: 10
+    power: 10,
+    run_20:3.85,
+    jump_length: 175,
+    ideal_pass: 10,
+    coordination_value: 35
   };
 
   const html = await ejs.renderFile('./views/index.ejs', {
     title: 'Главная',
-    user
+    user,
+
   });
 
   return c.html(html);

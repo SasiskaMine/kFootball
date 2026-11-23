@@ -13,13 +13,23 @@
 <body>
     <header>
         <img src="/img/logo.svg" alt="logo" width="64" height="64">
-        <span class="select-profile">
+        <span id="openBtn" class="select-profile">
             <p><b>Ануров Кирилл</b></p>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#1f1f1f">
                 <path d="M12,15.4l-6-6L7.4,8L12,12.6L16.6,8L18,9.4l-6,6Z" />
             </svg>
         </span>
     </header>
+    <div class="workout">
+        <div class="workout-header">
+            <p><b>Следующия тренеровка:</b></p>
+        </div>
+        <div class="workout-content">
+            <p>11.11.26</p>
+        </div>
+
+
+    </div>
     <div class="user-card">
         <svg class="fifa-shield" viewBox="0 0 320 450" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -168,7 +178,9 @@
                 <p><b>Бег 20м</b></p>
             </span>
             <span style="display: flex; align-items: baseline; gap: 4px;">
-                <h3 style="font-size: 20px; margin: 0;">3.78</h3>
+                <h3 style="font-size: 20px; margin: 0;">
+                    <%= locals.user?.run_20 || "Нет замера" %>
+                </h3>
                 <p style="margin: 0;">с</p>
             </span>
         </div>
@@ -178,7 +190,9 @@
                 <p><b>Взрывная сила ног</b></p>
             </span>
             <span style="display: flex; align-items: baseline; gap: 4px;">
-                <h3 style="font-size: 20px; margin: 0;">172</h3>
+                <h3 style="font-size: 20px; margin: 0;">
+                    <%= locals.user?.jump_length || "Нет замера" %>
+                </h3>
                 <p style="margin: 0;">м</p>
             </span>
         </div>
@@ -188,7 +202,9 @@
                 <p><b>Пасы</b></p>
             </span>
             <span style="display: flex; align-items: baseline; gap: 4px;">
-                <h3 style="font-size: 20px; margin: 0;">10</h3>
+                <h3 style="font-size: 20px; margin: 0;">
+                    <%= locals.user?.ideal_pass || "Нет замера" %>
+                </h3>
                 <p style="margin: 0;">к-в</p>
             </span>
         </div>
@@ -198,11 +214,58 @@
                 <p><b>Координация</b></p>
             </span>
             <span style="display: flex; align-items: baseline; gap: 4px;">
-                <h3 style="font-size: 20px; margin: 0;">35</h3>
+                <h3 style="font-size: 20px; margin: 0;">
+                    <%= locals.user?.coordination_value || "Нет замера" %>
+                </h3>
                 <p style="margin: 0;">к-в</p>
             </span>
         </div>
+
+
+    </div>
+    <div class="settings">
+        <h2>Настройки</h2>
     </div>
 </body>
+<script>
+    const settings = document.querySelector('.settings');
+const openBtn = document.getElementById('openBtn');
+
+let startY = 0;
+let currentY = 0;
+let isDragging = false;
+
+openBtn.addEventListener('click', () => {
+    settings.classList.add('open');
+});
+
+settings.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    startY = e.clientY;
+    settings.style.transition = 'none';
+});
+
+window.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    currentY = e.clientY - startY;
+    if (currentY > 0) {
+        settings.style.transform = `translateY(${currentY}px)`;
+    }
+});
+
+window.addEventListener('pointerup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    settings.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+    if (currentY > 100) {
+        settings.style.transform = '';
+        settings.classList.remove('open');
+    } else {
+        settings.style.transform = '';
+    }
+    currentY = 0;
+});
+
+</script>
 
 </html>
