@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/klythora-ui@1.0.0/index.js"></script>
+</head>
+
+<body>
+    <img src="/img/logo.svg" alt="logo" width="64" height="64">
+    <h1>kFootball - Вход</h1>
+    <form id="login_form" action="/login" method="post">
+        <ui-input name="username" placeholder="Логин"></ui-input>
+        <ui-input name="password" type="password" placeholder="Пароль"></ui-input>
+        <ui-outline-button type="submit">Войти</ui-outline-button>
+    </form>
+
+    <form id="reg_form" action="/register" method="post">
+        <ui-input name="name" placeholder="Имя Фамилия"></ui-input>
+        <ui-input name="username" placeholder="Логин"></ui-input>
+        <ui-input name="password" type="password" placeholder="Пароль"></ui-input>
+        <ui-outline-button type="submit">Зарегистрироваться</ui-outline-button>
+    </form>
+    <a id="change_form">Нету аккаунта? Зарегестрироваться!</a>
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&family=Rubik:ital,wght@0,300..900;1,300..900');
+
+    * {
+        font-family: 'Nunito';
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80dvh;
+        flex-direction: column;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border: 2px solid gray;
+        border-radius: 30px;
+        padding: 15px;
+    }
+</style>
+
+<script>
+    let change_form = document.querySelector('#change_form');
+    let login_form = document.querySelector('#login_form');
+    let reg_form = document.querySelector('#reg_form');
+
+    login_form.style.display = 'flex';
+    reg_form.style.display = 'none';
+
+    let isLogin = true;
+
+    function toggleForm() {
+        isLogin = !isLogin;
+        login_form.style.display = isLogin ? 'flex' : 'none';
+        reg_form.style.display = isLogin ? 'none' : 'flex';
+    }
+    change_form.onclick = toggleForm;
+
+
+</script>
+<script>
+  document.querySelectorAll('form').forEach(form => {
+
+    const btn = form.querySelector('ui-outline-button');
+    if (btn) {
+      btn.addEventListener('click', () => form.requestSubmit());
+    }
+
+
+    form.addEventListener('submit', () => {
+      form.querySelectorAll('ui-input').forEach(uiInput => {
+        const name = uiInput.getAttribute('name');
+        if (!name) return;
+        let hidden = form.querySelector(`input[type="hidden"][name="${name}"]`);
+        if (!hidden) {
+          hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = name;
+          form.appendChild(hidden);
+        }
+        hidden.value = uiInput.value || uiInput.shadowRoot?.querySelector('input')?.value || '';
+      });
+    });
+  });
+</script>
+
+</html>

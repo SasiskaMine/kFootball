@@ -13,6 +13,7 @@ header {
     border-bottom: 2px solid gray;
     align-items: center;
 }
+
 .select-profile {
     background-color: #F3F2F9;
     border-radius: 30px;
@@ -43,6 +44,7 @@ header {
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid gray;
+    margin: 4px;
 
 }
 .stat-icon {
