@@ -1,11 +1,715 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background: #363636;
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Rubik', sans-serif;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <!-- Шапка (компактная, точно помещается на мобильном и растягивается) -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="/dashboard" title="Перейти в дашборд"><img src="/img/logo.svg" alt="logo" width="52" height="52" style="cursor: pointer;"></a>
+            <span style="font-family: 'Oswald', sans-serif; font-size: 20px; color: #1e3c72; font-weight: 700; letter-spacing: 0.5px;">АДМИНКА</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="/dashboard" class="player-select-btn" style="display: inline-flex; align-items: center; gap: 4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Дашборд
+            </a>
+        </div>
+    </header>
+
+    <div class="admin-page-container">
+        <!-- Блок Следующая тренировка (в оригинальных стилях .workout) -->
+        <div class="workout">
+            <div class="workout-header" style="justify-content: space-between; align-items: center;">
+                <p><b>Следующия тренеровка:</b></p>
+                <span style="font-size: 11px; opacity: 0.8; font-family: 'Nunito', sans-serif;">Расписание</span>
+            </div>
+            <div class="workout-content" style="flex-direction: column; align-items: center; gap: 8px;">
+                <form action="/admin/workout" method="POST" style="display: flex; gap: 8px; align-items: center; justify-content: center; width: 100%; flex-wrap: wrap;">
+                    <input type="hidden" name="userId" value="<%= selectedUser ? selectedUser.id : '' %>">
+                    <input 
+                        type="text" 
+                        name="next_workout" 
+                        class="admin-workout-input" 
+                        value="<%= nextWorkout || '11.11.26' %>" 
+                        placeholder="11.11.26" 
+                        required
+                    >
+                    <button type="submit" class="admin-gold-btn" style="padding: 8px 14px; font-size: 13px;">
+                        Сохранить
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Таблица игроков с выбором (в оригинальных стилях .stats) -->
+        <div class="stats">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid gray; padding-bottom: 6px; margin-bottom: 8px;">
+                <h2 style="margin: 0; font-size: 17px;">Таблица игроков</h2>
+                <button type="button" onclick="openAddPlayerModal()" class="admin-gold-btn" style="padding: 4px 10px; font-size: 12px;">
+                    + Игрок
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="players-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; text-align: center;">Выбор</th>
+                            <th>Имя</th>
+                            <th>Поз</th>
+                            <th>Рейт</th>
+                            <th>СКОР</th>
+                            <th>СИЛА</th>
+                            <th>Бег 20м</th>
+                            <th>Прыжок</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (users.length === 0) { %>
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 20px;">Нет игроков. Нажмите «+ Игрок», чтобы создать!</td>
+                            </tr>
+                        <% } %>
+                        <% users.forEach(function(u) { %>
+                            <tr class="<%= (selectedUser && selectedUser.id === u.id) ? 'active-row' : '' %>" onclick="window.location.href='/admin?userId=<%= u.id %>'">
+                                <td style="text-align: center;">
+                                    <input type="radio" name="selected_user_radio" value="<%= u.id %>" <%= (selectedUser && selectedUser.id === u.id) ? 'checked' : '' %> style="accent-color: #f3d43c; cursor: pointer;">
+                                </td>
+                                <td><b><%= u.name %></b></td>
+                                <td><span style="color: #f3d43c; font-weight: bold;"><%= u.position || 'НАП' %></span></td>
+                                <td><b><%= u.rating || 40 %></b></td>
+                                <td><%= u.speed ?? '—' %></td>
+                                <td><%= u.power ?? '—' %></td>
+                                <td><%= u.run_20 ? u.run_20 + 'с' : '—' %></td>
+                                <td><%= u.jump_length ? u.jump_length + 'см' : '—' %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <div style="font-size: 11px; color: #a0aec0; margin-top: 6px; text-align: right;">
+                (Нажмите на строку таблицы, чтобы выбрать игрока)
+            </div>
+        </div>
+
+        <% if (selectedUser) { %>
+            <div class="admin-main-grid">
+                <!-- Редактирование выбранного игрока -->
+                <div class="stats" style="margin: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid gray; padding-bottom: 6px; margin-bottom: 12px;">
+                        <h2 style="margin: 0; font-size: 17px;">Редактирование: <%= selectedUser.name %></h2>
+                        <span style="font-size: 11px; color: #f3d43c; font-weight: bold;">ID: <%= selectedUser.id %></span>
+                    </div>
+
+                    <form id="playerForm" action="/admin/update" method="POST">
+                        <input type="hidden" name="id" value="<%= selectedUser.id %>">
+
+                        <!-- Замеры -->
+                        <div style="color: #f3d43c; font-weight: 700; margin-bottom: 8px; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 4px;">
+                            1. Замеры (Нормативы)
+                        </div>
+
+                        <div class="admin-grid-2">
+                            <!-- Бег 20м -->
+                            <div class="admin-form-group">
+                                <label for="run_20">
+                                    <span>Бег 20 метров (сек)</span>
+                                    <span class="calc-pill" id="speedCalcBadge">СКОР: <%= selectedUser.run_20 ? Math.min(10, Math.round((4 / selectedUser.run_20 * 10) * 10) / 10) : '—' %> / 10</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    step="0.01" 
+                                    min="0" 
+                                    max="30"
+                                    id="run_20" 
+                                    name="run_20" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.run_20 ?? '' %>" 
+                                    placeholder="Время (напр. 3.85)"
+                                >
+                            </div>
+
+                            <!-- Прыжок в длину -->
+                            <div class="admin-form-group">
+                                <label for="jump_length">
+                                    <span>Прыжок в длину (см)</span>
+                                    <span class="calc-pill" id="powerCalcBadge">СИЛА: <%= selectedUser.jump_length ? Math.min(10, Math.round(((selectedUser.jump_length <= 5 ? selectedUser.jump_length * 100 : selectedUser.jump_length) / 165 * 10) * 10) / 10) : '—' %> / 10</span>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    step="1" 
+                                    min="0" 
+                                    max="400"
+                                    id="jump_length" 
+                                    name="jump_length" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.jump_length ?? '' %>" 
+                                    placeholder="Длина (напр. 175)"
+                                >
+                            </div>
+
+                            <!-- Пасы -->
+                            <div class="admin-form-group">
+                                <label for="ideal_pass">Пасы в цель (кол-во)</label>
+                                <input 
+                                    type="number" 
+                                    step="1" 
+                                    min="0" 
+                                    id="ideal_pass" 
+                                    name="ideal_pass" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.ideal_pass ?? '' %>" 
+                                    placeholder="Количество"
+                                >
+                            </div>
+
+                            <!-- Координация -->
+                            <div class="admin-form-group">
+                                <label for="coordination_value">Тест координации (кол-во)</label>
+                                <input 
+                                    type="number" 
+                                    step="1" 
+                                    min="0" 
+                                    id="coordination_value" 
+                                    name="coordination_value" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.coordination_value ?? '' %>" 
+                                    placeholder="Количество"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Характеристики карточки (макс 10) -->
+                        <div style="color: #f3d43c; font-weight: 700; margin: 12px 0 8px 0; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 4px;">
+                            2. Характеристики карточки (максимум 10)
+                        </div>
+
+                        <div class="admin-grid-2">
+                            <!-- Скорость -->
+                            <div class="admin-form-group">
+                                <label for="speed">Скорость (СКОР, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="speed" 
+                                    name="speed" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.speed ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+
+                            <!-- Сила -->
+                            <div class="admin-form-group">
+                                <label for="power">Сила (СИЛА, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="power" 
+                                    name="power" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.power ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+
+                            <!-- Удар -->
+                            <div class="admin-form-group">
+                                <label for="shot">Удар (УДАР, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="shot" 
+                                    name="shot" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.shot ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+
+                            <!-- Пасы -->
+                            <div class="admin-form-group">
+                                <label for="pass">Пасы (ПАСЫ, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="pass" 
+                                    name="pass" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.pass ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+
+                            <!-- Координация -->
+                            <div class="admin-form-group">
+                                <label for="coord">Координация (КООРД, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="coord" 
+                                    name="coord" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.coord ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+
+                            <!-- Дриблинг -->
+                            <div class="admin-form-group">
+                                <label for="drib">Дриблинг (ДРИБ, макс 10)</label>
+                                <input 
+                                    type="number" 
+                                    step="0.1" 
+                                    min="0" 
+                                    max="10"
+                                    id="drib" 
+                                    name="drib" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.drib ?? '' %>" 
+                                    placeholder="1-10"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Профиль игрока -->
+                        <div style="color: #f3d43c; font-weight: 700; margin: 12px 0 8px 0; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 4px;">
+                            3. Профиль игрока
+                        </div>
+
+                        <div class="admin-grid-2">
+                            <div class="admin-form-group">
+                                <label for="name">Имя Фамилия</label>
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.name %>" 
+                                    required
+                                >
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="position">Позиция</label>
+                                <select id="position" name="position" class="admin-input-dark">
+                                    <option value="НАП" <%= selectedUser.position === 'НАП' ? 'selected' : '' %>>НАП (Нападающий)</option>
+                                    <option value="ПЗ" <%= selectedUser.position === 'ПЗ' ? 'selected' : '' %>>ПЗ (Полузащитник)</option>
+                                    <option value="ЦП" <%= selectedUser.position === 'ЦП' ? 'selected' : '' %>>ЦП (Центральный полузащитник)</option>
+                                    <option value="ЛВ" <%= selectedUser.position === 'ЛВ' ? 'selected' : '' %>>ЛВ (Левый вингер)</option>
+                                    <option value="ПВ" <%= selectedUser.position === 'ПВ' ? 'selected' : '' %>>ПВ (Правый вингер)</option>
+                                    <option value="ЦЗ" <%= selectedUser.position === 'ЦЗ' ? 'selected' : '' %>>ЦЗ (Центральный защитник)</option>
+                                    <option value="ВРТ" <%= selectedUser.position === 'ВРТ' ? 'selected' : '' %>>ВРТ (Вратарь)</option>
+                                </select>
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="rating">
+                                    <span>Общий рейтинг (FIFA)</span>
+                                    <button type="button" id="calcRatingBtn" style="background: none; border: none; color: #f3d43c; cursor: pointer; text-decoration: underline; font-size: 11px;">Рассчитать</button>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    max="99" 
+                                    id="rating" 
+                                    name="rating" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.rating ?? 40 %>"
+                                >
+                            </div>
+
+                            <div class="admin-form-group">
+                                <label for="avatar">Фото игрока (URL)</label>
+                                <input 
+                                    type="text" 
+                                    id="avatar" 
+                                    name="avatar" 
+                                    class="admin-input-dark" 
+                                    value="<%= selectedUser.avatar || '' %>" 
+                                    placeholder="https://..."
+                                >
+                            </div>
+                        </div>
+
+                        <div style="margin: 12px 0;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; color: #d6e0f5;">
+                                <input type="checkbox" name="auto_calc" id="auto_calc" value="1" checked style="accent-color: #f3d43c; width: 16px; height: 16px;">
+                                <span>Авто-пересчет Скорости и Силы по замерам при сохранении (макс 10)</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="admin-gold-btn" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px;">
+                            Сохранить изменения игрока
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Предпросмотр карточки игрока (на мобильном располагается под формой или над ней, на десктопе справа) -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 10px auto;">
+                    <div style="font-size: 13px; color: #f3d43c; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Предпросмотр карточки
+                    </div>
+                    <div class="user-card" id="cardPreview">
+                        <svg class="fifa-shield" viewBox="0 0 320 450" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="card-bg" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#1e3c72" />
+                                    <stop offset="55%" stop-color="#142854" />
+                                    <stop offset="100%" stop-color="#0b1733" />
+                                </linearGradient>
+                                <linearGradient id="gold-border" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#f3d43c" />
+                                    <stop offset="50%" stop-color="#fff099" />
+                                    <stop offset="100%" stop-color="#c9a218" />
+                                </linearGradient>
+                                <clipPath id="fifa-clip">
+                                    <path d="M 32,68 Q 95,48 142,26 L 160,12 L 178,26 Q 225,48 288,68 L 288,365 Q 288,390 250,400 Q 185,412 160,436 Q 135,412 70,400 Q 32,390 32,365 Z" />
+                                </clipPath>
+                            </defs>
+
+                            <path d="M 32,68 Q 95,48 142,26 L 160,12 L 178,26 Q 225,48 288,68 L 288,365 Q 288,390 250,400 Q 185,412 160,436 Q 135,412 70,400 Q 32,390 32,365 Z"
+                                fill="url(#card-bg)" stroke="url(#gold-border)" stroke-width="5" />
+
+                            <path d="M 40,74 Q 98,55 144,34 L 160,21 L 176,34 Q 222,55 280,74 L 280,360 Q 280,382 246,391 Q 185,402 160,425 Q 135,402 74,391 Q 40,382 40,360 Z"
+                                fill="none" stroke="rgba(243, 212, 60, 0.25)" stroke-width="1.5" />
+                        </svg>
+
+                        <div class="card-content">
+                            <div class="card-top">
+                                <div class="left-info">
+                                    <div class="card-rating" id="previewRating"><%= selectedUser.rating ?? 40 %></div>
+                                    <div class="card-pos" id="previewPos"><%= selectedUser.position || 'НАП' %></div>
+                                    <div class="info-line"></div>
+                                    <div class="flag-ru" title="Россия">
+                                        <span class="flag-w"></span>
+                                        <span class="flag-b"></span>
+                                        <span class="flag-r"></span>
+                                    </div>
+                                </div>
+
+                                <div class="photo-box">
+                                    <img class="player-photo" id="previewAvatar"
+                                        src="<%= selectedUser.avatar || 'https://placehold.co/220x240/7d94a8/ffffff?text=PHOTO' %>"
+                                        alt="<%= selectedUser.name %>">
+                                </div>
+                            </div>
+
+                            <div class="card-name" id="previewName"><%= selectedUser.name %></div>
+                            <div class="name-line"></div>
+
+                            <div class="card-stats">
+                                <div class="stats-col">
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewSpeedVal"><%= selectedUser.speed ?? '—' %></span>
+                                            <span class="stat-label">СКОР</span>
+                                        </div>
+                                        <div class="bar-track" id="previewSpeedBar" style="--val: <%= selectedUser.speed ? Math.min(100, Math.round(selectedUser.speed * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewShotVal"><%= selectedUser.shot ?? '—' %></span>
+                                            <span class="stat-label">УДАР</span>
+                                        </div>
+                                        <div class="bar-track" id="previewShotBar" style="--val: <%= selectedUser.shot ? Math.min(100, Math.round(selectedUser.shot * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewPassVal"><%= selectedUser.pass ?? '—' %></span>
+                                            <span class="stat-label">ПАСЫ</span>
+                                        </div>
+                                        <div class="bar-track" id="previewPassBar" style="--val: <%= selectedUser.pass ? Math.min(100, Math.round(selectedUser.pass * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="stats-divider"></div>
+
+                                <div class="stats-col">
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewCoordVal"><%= selectedUser.coord ?? '—' %></span>
+                                            <span class="stat-label">КООРД</span>
+                                        </div>
+                                        <div class="bar-track" id="previewCoordBar" style="--val: <%= selectedUser.coord ? Math.min(100, Math.round(selectedUser.coord * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewDribVal"><%= selectedUser.drib ?? '—' %></span>
+                                            <span class="stat-label">ДРИБ</span>
+                                        </div>
+                                        <div class="bar-track" id="previewDribBar" style="--val: <%= selectedUser.drib ? Math.min(100, Math.round(selectedUser.drib * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-text">
+                                            <span class="stat-val" id="previewPowerVal"><%= selectedUser.power ?? '—' %></span>
+                                            <span class="stat-label">СИЛА</span>
+                                        </div>
+                                        <div class="bar-track" id="previewPowerBar" style="--val: <%= selectedUser.power ? Math.min(100, Math.round(selectedUser.power * 10)) : 0 %>%;">
+                                            <div class="bar-fill"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Модальное окно добавления нового игрока -->
+    <div class="modal-overlay" id="addPlayerModal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #555; padding-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 17px; color: #f3d43c;">Добавить игрока</h3>
+                <button type="button" onclick="closeAddPlayerModal()" style="background: none; border: none; font-size: 24px; color: #fff; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <form action="/admin/user/create" method="POST">
+                <div class="admin-form-group">
+                    <label for="new_name">Имя и Фамилия</label>
+                    <input type="text" id="new_name" name="name" class="admin-input-dark" placeholder="Иван Иванов" required>
+                </div>
+                <div class="admin-form-group">
+                    <label for="new_position">Позиция</label>
+                    <select id="new_position" name="position" class="admin-input-dark">
+                        <option value="НАП">НАП (Нападающий)</option>
+                        <option value="ПЗ">ПЗ (Полузащитник)</option>
+                        <option value="ЦП">ЦП (Центральный полузащитник)</option>
+                        <option value="ЛВ">ЛВ (Левый вингер)</option>
+                        <option value="ПВ">ПВ (Правый вингер)</option>
+                        <option value="ЦЗ">ЦЗ (Центральный защитник)</option>
+                        <option value="ВРТ">ВРТ (Вратарь)</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label for="new_username">Логин для входа</label>
+                    <input type="text" id="new_username" name="username" class="admin-input-dark" placeholder="player" required>
+                </div>
+                <div class="admin-form-group">
+                    <label for="new_password">Пароль</label>
+                    <input type="password" id="new_password" name="password" class="admin-input-dark" value="123456" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button type="button" class="player-select-btn" style="flex: 1; text-align: center; padding: 10px;" onclick="closeAddPlayerModal()">Отмена</button>
+                    <button type="submit" class="admin-gold-btn" style="flex: 1; justify-content: center; padding: 10px;">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddPlayerModal() {
+            document.getElementById('addPlayerModal').style.display = 'flex';
+        }
+        function closeAddPlayerModal() {
+            document.getElementById('addPlayerModal').style.display = 'none';
+        }
+
+        // Скорость: 4 / время * 10 (максимум 10)
+        function calcSpeedScore(seconds) {
+            const time = parseFloat(seconds);
+            if (!time || isNaN(time) || time <= 0) return null;
+            const score = (4 / time) * 10;
+            const rounded = Math.round(score * 10) / 10;
+            return Math.min(10, Math.max(0, rounded));
+        }
+
+        // Сила: длина / 165 * 10 (максимум 10)
+        function calcPowerScore(length) {
+            let val = parseFloat(length);
+            if (!val || isNaN(val) || val <= 0) return null;
+            if (val <= 5) val = val * 100;
+            const score = (val / 165) * 10;
+            const rounded = Math.round(score * 10) / 10;
+            return Math.min(10, Math.max(0, rounded));
+        }
+
+        // DOM элементы
+        const run20Input = document.getElementById('run_20');
+        const jumpLengthInput = document.getElementById('jump_length');
+        const speedInput = document.getElementById('speed');
+        const powerInput = document.getElementById('power');
+        const shotInput = document.getElementById('shot');
+        const passInput = document.getElementById('pass');
+        const coordInput = document.getElementById('coord');
+        const dribInput = document.getElementById('drib');
+        const nameInput = document.getElementById('name');
+        const posInput = document.getElementById('position');
+        const ratingInput = document.getElementById('rating');
+        const avatarInput = document.getElementById('avatar');
+
+        const speedCalcBadge = document.getElementById('speedCalcBadge');
+        const powerCalcBadge = document.getElementById('powerCalcBadge');
+        const calcRatingBtn = document.getElementById('calcRatingBtn');
+
+        // Карточка предпросмотра
+        const previewName = document.getElementById('previewName');
+        const previewPos = document.getElementById('previewPos');
+        const previewRating = document.getElementById('previewRating');
+        const previewAvatar = document.getElementById('previewAvatar');
+
+        const previewSpeedVal = document.getElementById('previewSpeedVal');
+        const previewSpeedBar = document.getElementById('previewSpeedBar');
+        const previewPowerVal = document.getElementById('previewPowerVal');
+        const previewPowerBar = document.getElementById('previewPowerBar');
+        const previewShotVal = document.getElementById('previewShotVal');
+        const previewShotBar = document.getElementById('previewShotBar');
+        const previewPassVal = document.getElementById('previewPassVal');
+        const previewPassBar = document.getElementById('previewPassBar');
+        const previewCoordVal = document.getElementById('previewCoordVal');
+        const previewCoordBar = document.getElementById('previewCoordBar');
+        const previewDribVal = document.getElementById('previewDribVal');
+        const previewDribBar = document.getElementById('previewDribBar');
+
+        function updateBar(valEl, barEl, val) {
+            if (valEl) valEl.textContent = (val !== null && val !== undefined && val !== '') ? val : '—';
+            if (barEl) {
+                const num = parseFloat(val);
+                const percent = (!isNaN(num) && num > 0) ? Math.min(100, Math.round(num * 10)) : 0;
+                barEl.style.setProperty('--val', percent + '%');
+            }
+        }
+
+        function updatePreview() {
+            if (previewName && nameInput) previewName.textContent = nameInput.value || 'ИМЯ ИГРОКА';
+            if (previewPos && posInput) previewPos.textContent = posInput.value || 'НАП';
+            if (previewRating && ratingInput) previewRating.textContent = ratingInput.value || '40';
+            if (previewAvatar && avatarInput) {
+                previewAvatar.src = avatarInput.value.trim() || 'https://placehold.co/220x240/7d94a8/ffffff?text=PHOTO';
+            }
+
+            updateBar(previewSpeedVal, previewSpeedBar, speedInput?.value);
+            updateBar(previewPowerVal, previewPowerBar, powerInput?.value);
+            updateBar(previewShotVal, previewShotBar, shotInput?.value);
+            updateBar(previewPassVal, previewPassBar, passInput?.value);
+            updateBar(previewCoordVal, previewCoordBar, coordInput?.value);
+            updateBar(previewDribVal, previewDribBar, dribInput?.value);
+        }
+
+        if (run20Input) {
+            run20Input.addEventListener('input', () => {
+                const calculated = calcSpeedScore(run20Input.value);
+                if (calculated !== null) {
+                    speedCalcBadge.textContent = 'СКОР: ' + calculated + ' / 10';
+                    if (!speedInput.value || document.getElementById('auto_calc').checked) {
+                        speedInput.value = calculated;
+                    }
+                } else {
+                    speedCalcBadge.textContent = 'СКОР: — / 10';
+                }
+                updatePreview();
+            });
+        }
+
+        if (jumpLengthInput) {
+            jumpLengthInput.addEventListener('input', () => {
+                const calculated = calcPowerScore(jumpLengthInput.value);
+                if (calculated !== null) {
+                    powerCalcBadge.textContent = 'СИЛА: ' + calculated + ' / 10';
+                    if (!powerInput.value || document.getElementById('auto_calc').checked) {
+                        powerInput.value = calculated;
+                    }
+                } else {
+                    powerCalcBadge.textContent = 'СИЛА: — / 10';
+                }
+                updatePreview();
+            });
+        }
+
+        if (calcRatingBtn) {
+            calcRatingBtn.addEventListener('click', () => {
+                const stats = [
+                    parseFloat(speedInput.value),
+                    parseFloat(powerInput.value),
+                    parseFloat(shotInput.value),
+                    parseFloat(passInput.value),
+                    parseFloat(coordInput.value),
+                    parseFloat(dribInput.value)
+                ].filter(val => !isNaN(val) && val > 0);
+
+                if (stats.length > 0) {
+                    const avg = stats.reduce((a, b) => a + b, 0) / stats.length;
+                    const computedRating = Math.round(avg * 10);
+                    ratingInput.value = Math.max(40, Math.min(99, computedRating));
+                    updatePreview();
+                } else {
+                    alert('Заполните характеристики для расчета рейтинга');
+                }
+            });
+        }
+
+        [speedInput, powerInput, shotInput, passInput, coordInput, dribInput].forEach(el => {
+            if (el) {
+                el.addEventListener('input', () => {
+                    if (parseFloat(el.value) > 10) el.value = 10;
+                    updatePreview();
+                });
+            }
+        });
+
+        [nameInput, posInput, ratingInput, avatarInput].forEach(el => {
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        updatePreview();
+    </script>
 </body>
 </html>

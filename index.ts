@@ -13,7 +13,7 @@ app.use('/*', serveStatic({ root: './public' }));
 app.route('/',auth)
 app.route('/dashboard', dashboard)
 app.route('/logout',auth);
-app.route('/admin',admin)
+app.route('/admin',admin);
 
 serve({
   fetch: app.fetch,

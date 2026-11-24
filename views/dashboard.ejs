@@ -13,9 +13,9 @@
 
 <body>
     <header>
-        <img src="/img/logo.svg" alt="logo" width="64" height="64">
+        <a href="/admin"><img src="/img/logo.svg" alt="logo" width="64" height="64" style="cursor: pointer;"></a>
         <span id="openBtn" class="select-profile">
-            <p><b>Ануров Кирилл</b></p>
+            <p><b><%= user.name || 'Игрок' %></b></p>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#1f1f1f">
                 <path d="M12,15.4l-6-6L7.4,8L12,12.6L16.6,8L18,9.4l-6,6Z" />
             </svg>
@@ -26,7 +26,7 @@
             <p><b>Следующия тренеровка:</b></p>
         </div>
         <div class="workout-content">
-            <p>11.11.26</p>
+            <p><%= locals.nextWorkout || '11.11.26' %></p>
         </div>
 
 
@@ -194,7 +194,7 @@
                 <h3 style="font-size: 20px; margin: 0;">
                     <%= locals.user?.jump_length || "Нет замера" %>
                 </h3>
-                <p style="margin: 0;">м</p>
+                <p style="margin: 0;"><%= (locals.user?.jump_length && locals.user?.jump_length <= 5) ? 'м' : 'см' %></p>
             </span>
         </div>
         <div class="result">
